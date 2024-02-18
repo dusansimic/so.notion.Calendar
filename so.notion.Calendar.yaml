@@ -1,0 +1,61 @@
+app-id: so.notion.Calendar
+runtime: org.freedesktop.Platform
+runtime-version: 23.08
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: 23.08
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node18
+
+build-options:
+  append-path: /usr/lib/sdk/node18/bin
+  env:
+    NPM_CONFIG_LOGLEVEL: info
+
+command: notion-calendar
+
+modules:
+  - name: calendar
+    buildsystem: simple
+    build-options:
+      append-path: /run/build/calendar/node_modules/.bin
+      env:
+        XDG_CACHE_HOME: /run/build/calendar/flatpak-node/cache
+        npm_config_cache: /run/build/calendar/flatpak-node/npm-cache
+        npm_config_nodedir: /usr/lib/sdk/node18
+        npm_config_offline: "true"
+    build-commands:
+      - npm install --offline
+      - npm run prebuild
+      - |
+        . flatpak-node/electron-builder-arch-args.sh
+        electron-builder ${ELECTRON_BUILDER_ARCH_ARGS} --linux --dir
+      - cp -a dist/linux*unpacked "${FLATPAK_DEST}/notion-calendar"
+      - install -Dm644 build/icon.png "${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/${FLATPAK_ID}.png"
+      - install -Dm755 notion-calendar.sh "${FLATPAK_DEST}/bin/notion-calendar"
+    sources:
+      - type: git
+        url: https://github.com/dusansimic/notion-calendar
+        branch: main
+        # x-checker-data:
+        #   type: git
+        #   tag-pattern: ^v([\d.]+)$
+        #   version-scheme: semantic
+      - type: script
+        dest-filename: notion-calendar.sh
+        commands:
+          - export TMPDIR="${XDG_RUNTIME_DIR}${FLATPAK_DEST}/${FLATPAK_ID}"
+          - exec zypak-wrapper "/app/notion-calendar/notion-calendar" "$@"
+      - generated-sources.json
+  - name: extra
+    buildsystem: simple
+    build-commands:
+      - install -Dm644 "${FLATPAK_ID}.desktop" -t "${FLATPAK_DEST}/share/applications"
+      - install -Dm644 "${FLATPAK_ID}.metainfo.xml" -t "${FLATPAK_DEST}/share/metainfo"
+    sources:
+      - type: file
+        path: so.notion.Calendar.desktop
+        sha256: 76f019b4c0724ec6d05953c3235ecd9ce6d36b460a8c4b4c5d60dca2fa186111
+      - type: file
+        path: so.notion.Calendar.metainfo.xml
+        sha256: 8c683f7ad4c45dceff89de48ba491aa85dea2868db1658974729e2c9fec63111

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Notion Calendar
+GenericName=Calendar
+Comment=Notion Calendar desktop application
+Icon=so.notion.Calendar
+TryExec=notion-calendar
+Exec=notion-calendar %U
+StartupWMClass=notion-calendar
+Terminal=false
+Categories=Office;Calendar;
+StartupNotify=true

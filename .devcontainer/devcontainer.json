@@ -1,0 +1,15 @@
+{
+	"name": "Alpine",
+	"image": "mcr.microsoft.com/devcontainers/base:alpine-3.19",
+	"features": {
+		"ghcr.io/devcontainers-contrib/features/actionlint:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"GitHub.vscode-github-actions",
+				"bilelmoussaoui.flatpak-vscode"
+			]
+		}
+	}
+}
